@@ -15,6 +15,8 @@ Open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC
 
 First time runs will place an extension in `\AppData\Roaming\vlc` for which you will need to activate each time when running the program (VLC limitations)
 
+If you get a np_metadata_full not found, that is completely normal it means its your first start and you have not ran the extension yet in VLC, just go under view and press the extension name to activate it and then play a song. You should now be able to start the program correctly.
+
 ## Commands and preferances
 
 ### `--help: Displays the list of available commands.`
