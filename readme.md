@@ -6,7 +6,7 @@
 
 ## Setup
 
-Download the jar from the [releases](releases) and place in its own designated folder.
+Download the jar from the [releases](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/releases/tag/1.0) and place in its own designated folder.
 Java is required for the next step so make sure you have installed it if not [Click here!](https://www.azul.com/downloads/?package=jdk#zulu)
 
 Navigate to the folder perhaps in a with the jar after installing java (hopefully with an installer or manually set $PATH)
