@@ -9,7 +9,10 @@
 Download the jar from the [releases](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/releases/tag/1.0) and place in its own designated folder.
 Java is required for the next step so make sure you have installed it if not [Click here!](https://www.azul.com/downloads/?package=jdk#zulu)
 
-After making sure the necessary requirements are met, navigate to the folder with the jar file in it and open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC-v1.jar --keepTime true` (adjust naming if needed)
+After making sure the necessary requirements are met, navigate to the folder with the jar file within it.
+
+Open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC-v1.jar --keepTime true --ignoreActiveVLC true` (adjust naming if needed)
+
 First time runs will place an extension in `\AppData\Roaming\vlc` for which you will need to activate each time when running the program (VLC limitations)
 
 ## Commands and preferances
@@ -24,6 +27,8 @@ First time runs will place an extension in `\AppData\Roaming\vlc` for which you 
 ### `--npFullMetadataFile <file-path-to-\np_metadata_full.txt> : If you are running an operating system other than Windows or another case scenario in which \AppData\Roaming\vlc\np_metadata_full.txt does not exist in usual directory when running extension on VLC`
 ### `--skipPlugincheck <true/false> : Skips the checking of whether the extension exists or not`
 ### `--ignoreActiveVLC <true/false> : Ignores the check for whether VLC is running or not`
+
+Report any bugs to the issues section of this repository and remember that arguments can help.
 
 ## Why was this even made?
 
