@@ -9,8 +9,7 @@
 Download the jar from the [releases](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/releases/tag/1.0) and place in its own designated folder.
 Java is required for the next step so make sure you have installed it if not [Click here!](https://www.azul.com/downloads/?package=jdk#zulu)
 
-Navigate to the folder perhaps in a with the jar after installing java (hopefully with an installer or manually set $PATH)
-Execute `java -jar VLCDiscord-RPC-v1.jar --keepTime true` (adjust naming if needed)
+After making sure the necessary requirements are met, navigate to the folder with the jar file in it and open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC-v1.jar --keepTime true` (adjust naming if needed)
 First time runs will place an extension in `\AppData\Roaming\vlc` for which you will need to activate each time when running the program (VLC limitations)
 
 ## Commands and preferances
