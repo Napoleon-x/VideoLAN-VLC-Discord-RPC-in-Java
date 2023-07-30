@@ -10,7 +10,7 @@ Download the jar from the [releases](https://github.com/Napoleon-x/VideoLAN-VLC-
 Java is required for the next step so make sure you have installed it if not [Click here!](https://www.azul.com/downloads/?package=jdk#zulu)
 
 Navigate to the folder perhaps in a with the jar after installing java (hopefully with an installer or manually set $PATH)
-Execute `java -jar VLCDiscord-RPC-v1.jar --keepTime true --disableWarnings true` (adjust naming if needed)
+Execute `java -jar VLCDiscord-RPC-v1.jar --keepTime true` (adjust naming if needed)
 First time runs will place an extension in `\AppData\Roaming\vlc` for which you will need to activate each time when running the program (VLC limitations)
 
 ## Commands and preferances
@@ -32,4 +32,4 @@ I got bored and recently had installed VLC and wanted to see if I could make a D
 
 ### Credits 
 
-Huge thanks to this person btw, would not be possible without editing some parts of his VLC lua plugin @un-pogaz https://github.com/un-pogaz/Now-Playing-in-texts
+Huge thanks to the developers of these projects [Now Playing in texts by un-pogaz](https://github.com/un-pogaz/Now-Playing-in-texts) and [Discord IPC](https://github.com/jagrosh/DiscordIPC)
