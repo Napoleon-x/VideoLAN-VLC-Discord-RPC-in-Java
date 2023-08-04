@@ -11,7 +11,7 @@ Java is required for the next step so make sure you have installed it if not [Cl
 
 After making sure the necessary requirements are met, navigate to the folder with the jar file within it.
 
-Open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC-v1.jar --keepTime true --ignoreActiveVLC true` (adjust naming if needed)
+Open a terminal in the folder and execute this command `java -jar VLCDiscord-RPC-v1.jar --keepTime true` (adjust naming if needed)
 
 First time runs will place an extension in `\AppData\Roaming\vlc` for which you will need to activate each time when running the program (VLC limitations)
 
