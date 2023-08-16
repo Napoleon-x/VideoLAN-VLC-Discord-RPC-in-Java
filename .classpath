@@ -6,9 +6,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="libraries/slf4j-api-2.0.7.jar"/>
-	<classpathentry kind="lib" path="libraries/slf4j-simple-2.0.7.jar"/>
 	<classpathentry kind="lib" path="libraries/json-20210307.jar"/>
 	<classpathentry kind="lib" path="libraries/junixsocket-common-2.0.4.3.jar"/>
+	<classpathentry kind="lib" path="B:/Projects/Napoleon-x/Workspace/VLCDiscordRPC/libraries/slf4j-api-2.0.7.jar"/>
+	<classpathentry kind="lib" path="B:/Projects/Napoleon-x/Workspace/VLCDiscordRPC/libraries/slf4j-simple-2.0.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

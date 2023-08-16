@@ -3,11 +3,14 @@ package me.napoleonx.vlcdrpc;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.concurrent.Executors;
@@ -26,20 +29,26 @@ import com.jagrosh.discordipc.entities.RichPresence;
    */
 public class Main {
 	public static OffsetDateTime time = OffsetDateTime.now();
-	public static String programName = "VLCDiscordRPC", version = "v1.0";
+	public static String programName = "VLCDiscordRPC", version = "v1.6";
 	public static String song = "";
 	public static String playingStateImage = "";
 	public static String playingState = "";
 	public static String songNameState = "";
 	public static String npFullMetadataFile = "C:\\Users\\"+System.getProperty("user.name")+"\\AppData\\Roaming\\vlc\\np_metadata_full.txt";
 	public static StringBuilder	detailText = null;
+	public static StringBuilder	playingSongText = null;
 	public static String songName;
+	public static String artworkPath;
+	public static String artist;
+	public static String metadataName;
     public static String os = System.getProperty("os.name").toLowerCase();
 	public static boolean pluginCheck = false;
 	public static boolean ignoreActive = false;
 	public static boolean hideCPS = false;
 	public static boolean showExtension = false;
 	public static boolean disableWarnings = false;
+	public static boolean artwork = true;
+	public static boolean availableMetdata;
 	public static boolean debug = false;
 	public static boolean keepTime = false; // Time will be set to program open time instead of time on current song
 
@@ -49,6 +58,8 @@ public class Main {
 			case "--keepTime":
 				if(args[i+1].contains("true")) {
 					keepTime=true;
+				} else if(args[i+1].contains("false")) {
+					keepTime=false;
 				}
 				break;
 				
@@ -68,12 +79,16 @@ public class Main {
 			case "--hideCPS":
 				if(args[i+1].contains("true")) {
 					hideCPS=true;
+				} else if(args[i+1].contains("false")) {
+					hideCPS=false;
 				}
 				break;
 				
 			case "--showExtension":
 				if(args[i+1].contains("true")) {
 					showExtension=true;
+				} else if(args[i+1].contains("false")) {
+					showExtension=false;
 				}
 				break;			
 				
@@ -84,36 +99,59 @@ public class Main {
 			case "--skipPlugincheck":
 				if(args[i+1].contains("true")) {
 					pluginCheck=true;
+				} else if(args[i+1].contains("false")) {
+					pluginCheck=false;
 				}
 				break;	
 			
-			case "--ignoreActiveVLC":
+			case "--checkActiveVLC":
 				if(args[i+1].contains("true")) {
+					ignoreActive=false;
+				} else if(args[i+1].contains("false")) {
 					ignoreActive=true;
+				}
+				break;	
+				
+			case "--enableArtwork":
+				if(args[i+1].contains("true")) {
+					artwork=true;
+				} else if(args[i+1].contains("false")) {
+					artwork=false;
 				}
 				break;	
 				
 			case "--help":
 			System.out.println("Commands: "
-					+ "\n--help : shows commands list\n--keepTime <true/false> : Time will be kept in elapsed section of your RPC even when on a different song and wont be reset when new song is playing.\n"
-					+ "--details <message here> : Puts an extra field in your rpc with a custom message\n"
+					+ "\n--help : Shows commands list\n--keepTime <true/false> : Time will be kept in elapsed section of your RPC even when on a different song and wont be reset when new song is playing.\n"
+					+ "--customCPS <message here> : Replace the \"Currently playing: (song_name)\" from the RPC. Available variables (playing_status) (song_name) (artist) (metadata_name)\n"
+					+ "--details <message here> : Puts an extra field in your rpc with a custom message. You can use variables like: (playing_status) (song_name) (artist) (metadata_name)\n"
+					+ "--enableArtwork <true/false> : Flex the metadata thumbnail artwork associated to your file\n"
 					+ "--disableWarnings <true/false> : Disables warnings from being printed\n"
 					+ "--debug <true/false> : Enables debug messages being printed\n"
 					+ "--showExtension <true/false> : Shows the file extension in its name on the RPC\n"
 					+ "--hideCPS <true/false> : Removes the \"Currently playing: \" from the RPC\n"
 					+ "--npFullMetadataFile <file-path-to-\np_metadata_full.txt> : If you are running an operating system other than Windows or another case scenario in which \\AppData\\Roaming\\vlc\\np_metadata_full.txt does not exist in usual directory when running extension on VLC\n"
 					+ "--skipPlugincheck <true/false> : Skips the checking of whether the extension exists or not\n"
-					+ "--ignoreActiveVLC <true/false> : Ignores the check for whether VLC is running or not\n\n\n\n\n");
+					+ "--checkActiveVLC <true/false> : Make the the RPC shut down when VLC is deactivated\n\n\n\n\n");
 				System.exit(14);
 			break;
 			
 			case "--details":
 				detailText = new StringBuilder();
 				for(int d = i+1; d < args.length; d++) { // int d = i+1; because you don't want the initial "--details" to be a part of the rpc text.
+					if(args[d].contains("--")) break; // Stop it from including any commands 
 					detailText.append(args[d]+" ");
 				}
 			break;
 			
+			case "--customCPS":
+				playingSongText = new StringBuilder();
+				for(int d = i+1; d < args.length; d++) { 
+					if(args[d].contains("--")) break;
+					playingSongText.append(args[d]+" ");
+				}
+			break;
+
 			default:
 				break;
 			}
@@ -204,7 +242,7 @@ public class Main {
 	}
 	
     private static void updatePresence(RichPresence.Builder builder, IPCClient client) {
-    	if(!isVLCRunning()||!ignoreActive) {
+    	if(!isVLCRunning()&&ignoreActive) {
     		System.out.println("[VLC Discord RPC ERROR]: VLC not detected as running within the tasks list. Please start VLC to continue running or run with --ignoreActiveVLC true");
     		System.exit(88);
     	}
@@ -233,10 +271,11 @@ public class Main {
         			song="Currently idle";
         			songNameState = song;
         		} else {
-        			//String artist = extractValue(contentBuilder.toString(), "{artist}");
         			//String duration = extractValue(contentBuilder.toString(), "{duration}");
         			String playingStatus = extractValue(contentBuilder.toString(), "{playing_state}");
-        			String pausedTime = extractValue(contentBuilder.toString(), "{time_at_recent_pause}");
+        		    String pausedTime = extractValue(contentBuilder.toString(), "{time_at_recent_pause}");
+        			String artworkFilePath = extractValue(contentBuilder.toString(), "{artwork}");
+        			String artistName = extractValue(contentBuilder.toString(), "{artist}");
         			String filenameTag = "{filename}";
         			String currentlyPlayingPrefix = "Currently playing: ";
         			if(hideCPS) currentlyPlayingPrefix="";
@@ -244,12 +283,23 @@ public class Main {
         			songName = extractValue(contentBuilder.toString(), filenameTag);
         			String newSong=currentlyPlayingPrefix+songName;
         			songNameState = newSong;
-        			if(playingStatus.contains("paused")) {
+        			if(!(playingStatus==null)&&playingStatus.contains("paused")) {
             			songNameState = newSong +" - "+pausedTime;
         			} 
-        			
+        			        			
+        	        String cleanedPath = artworkFilePath.replaceAll("[^\\x20-\\x7E]", "");
+        	        
+        	        cleanedPath = cleanedPath.replaceAll("\\s+", " ");
+        	        cleanedPath = cleanedPath.replaceAll(" +/", "/");
+        	        cleanedPath = cleanedPath.replaceAll("/ +", "/");
+        	        cleanedPath = FileSystems.getDefault().getPath(cleanedPath).normalize().toString();
+
+        			artworkPath=cleanedPath;
+        			artist=artistName.replace("\r\n\t", "");
+        			metadataName=extractValue(contentBuilder.toString(), "{name}").replace("\r\n\t", "");
+        			//System.out.println("Name: " + metadataName);
         			if(playingState.contains(playingStatus)&&song.contains(newSong)&&!(songName=="null")) {
-        				if(debug) System.out.println("no need to update anything");
+        				//if(debug) System.out.println("no need to update anything");
         				reader.close();
         				return; // No reason to update
         			}
@@ -265,6 +315,7 @@ public class Main {
         		reader.close();
         	}
         } catch(Exception e) {	
+        	e.printStackTrace();
         }
         if(playingState.contains("stopped")||playingState.contains("paused")) {
         	playingStateImage="vlc_pause"; // vlc_pause vlc_paused
@@ -273,12 +324,89 @@ public class Main {
         } else {
         	playingStateImage="vlc_play"; // vlc_play vlc_playing 
         }
+        if(!artwork||song.contains("Currently idle")||!Paths.get(artworkPath).toAbsolutePath().toString().contains(".") /* Checks for existing won't work as if its a whitespace it will think its the projects current directory and say true so this is the next best thing. */) {
+        	artworkPath="vlc_large"; // Default VLC RPC logo if file does not have metadata for artwork or is just idle
+        	availableMetdata=false;
+        	
+        } else {
+        	artworkPath=getAlbumArtURL(artworkPath, song);
+        	availableMetdata=true;
+        }
         builder.setDetails(songNameState);
-        if(!(detailText==null)) builder.setState(detailText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName)); /* Appears under the details in RPC. I have no idea on what to put in it, perhaps some program info? I will just let the user customise it ig */
+        if(!(playingSongText==null)&&availableMetdata)  builder.setDetails(playingSongText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName).replace("(artist)", artist).replace("(metadata_name)", metadataName).replace("(song)", songNameState));
+        if(!(detailText==null)&&availableMetdata) builder.setState(detailText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName).replace("(artist)", artist).replace("(metadata_name)", metadataName).replace("(song)", songNameState)); /* Appears under the details in RPC. I have no idea on what to put in it, perhaps some program info? I will just let the user customise it ig */
         builder.setStartTimestamp(time)
         .setSmallImage(playingStateImage, song)
-        .setLargeImage("vlc_large", "Currently using VLC");
+        .setLargeImage(artworkPath, "Currently using VLC"); // You can actually set URL links as the image key. Might integrate some sort of API for some shitty image upload site.
         client.sendRichPresence(builder.build());
+    }
+    
+    public static String getAlbumArtURL(String imagePath, String songName) {
+        Path savedImages = Paths.get("album.config");
+
+        JSONObject existingData = new JSONObject();
+
+        if (savedImages.toFile().exists()) {
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(savedImages.toFile()))) {
+                StringBuilder fileContent = new StringBuilder();
+                String line;
+                while ((line = fileReader.readLine()) != null) {
+                    fileContent.append(line);
+                }
+                existingData = new JSONObject(fileContent.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // Remove the "Currently playing: " prefix from the song name
+        String songKey = songName.replace("Currently playing: ", "").replace("\r\n\t", "");
+
+        if (existingData.has("Album") && existingData.getJSONObject("Album").has(songKey)) {
+            JSONObject albumInfo = existingData.getJSONObject("Album").getJSONObject(songKey);
+            if(debug) System.out.println("Image URL for the artwork of \""+songKey+"\": "+albumInfo.getString("URL"));
+            return albumInfo.getString("URL");
+        } else {
+            String apiKey = "e6d89588c1300895de959c6f0b085a19";
+
+            try {
+				Process processUp = Runtime.getRuntime().exec("curl --location --request POST \"https://api.imgbb.com/1/upload?expiration=600&key=" + apiKey + "\" --form \"image=@" + imagePath + "\"");
+                processUp.waitFor();
+                String lineUp;
+                StringBuilder output = new StringBuilder();
+                try (BufferedReader readerUp = new BufferedReader(new InputStreamReader(processUp.getInputStream()))) {
+                    while ((lineUp = readerUp.readLine()) != null) {
+                        output.append(lineUp);
+                    }
+                }
+                if(debug) System.out.println(output.toString());
+                JSONObject json = new JSONObject(output.toString());
+                JSONObject data = json.getJSONObject("data");
+                String imageUrl = data.getString("display_url");
+
+                JSONObject albumInfo = new JSONObject();
+                albumInfo.put("Path", imagePath);
+                albumInfo.put("Artist", artist);
+                albumInfo.put("URL", imageUrl);
+
+                if (!existingData.has("Album")) {
+                    existingData.put("Album", new JSONObject());
+                }
+
+                existingData.getJSONObject("Album").put(songKey, albumInfo);
+
+                try (FileWriter fileWriter = new FileWriter(savedImages.toFile())) {
+                    fileWriter.write(existingData.toString(4)); // Indentation of 4 spaces
+                    System.out.println("Album data for \""+songKey+"\" saved to " + savedImages.toFile());
+                    return imageUrl;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
     }
     
     private static String extractValue(String input, String tag) {
