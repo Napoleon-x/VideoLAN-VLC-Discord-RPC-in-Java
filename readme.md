@@ -41,7 +41,17 @@ Feel free to use these commands to customize your Rich Presence according to you
 
 ## Showcase
 
+Arguments come after the jar name in the command `java -jar VLCDiscord-RPC-v1.6.jar`
+1. `--hideCPS true  --customCPS (metadata_name)  --details (artist)`
+2. `--hideCPS true`
 
+| 1. --customCPS & --details | No arguments | 2. --hideCPS |
+| --- | --- | --- |
+| ![Image](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/assets/36709736/b8e92a6d-1c3d-4e08-bf2a-81778364df8f) | ![noAgrs](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/assets/36709736/4517914d-f2d6-4137-821d-43ff8a1bf731) | ![hideCPS](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/assets/36709736/91805c9e-3979-4d1d-be5a-a96347393c42) |
+
+| Idle/Not playing |
+| --- |
+| ![idle](https://github.com/Napoleon-x/VideoLAN-VLC-Discord-RPC-in-Java/assets/36709736/b39b46a7-3608-425f-a839-ae4e223b9f8d) |
 
 ## Why was this even made?
 
