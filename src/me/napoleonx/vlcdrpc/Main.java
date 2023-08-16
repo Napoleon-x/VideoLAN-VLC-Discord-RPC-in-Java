@@ -334,7 +334,11 @@ public class Main {
         }
         builder.setDetails(songNameState);
         if(!(playingSongText==null)&&availableMetdata)  builder.setDetails(playingSongText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName).replace("(artist)", artist).replace("(metadata_name)", metadataName).replace("(song)", songNameState));
-        if(!(detailText==null)&&availableMetdata) builder.setState(detailText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName).replace("(artist)", artist).replace("(metadata_name)", metadataName).replace("(song)", songNameState)); /* Appears under the details in RPC. I have no idea on what to put in it, perhaps some program info? I will just let the user customise it ig */
+        if(!(detailText==null)&&availableMetdata) {
+        	builder.setState(detailText.toString().replace("(playing_status)", playingState).replace("(song_name)", songName).replace("(artist)", artist).replace("(metadata_name)", metadataName).replace("(song)", songNameState)); /* Appears under the details in RPC. I have no idea on what to put in it, perhaps some program info? I will just let the user customise it ig */
+        } else if(!(detailText==null)&&!availableMetdata) {
+        	builder.setState(""); // Clean the details section so that if a song that has no metadata plays, it won't keep the artist info etc of the previous song.
+        } 
         builder.setStartTimestamp(time)
         .setSmallImage(playingStateImage, song)
         .setLargeImage(artworkPath, "Currently using VLC"); // You can actually set URL links as the image key. Might integrate some sort of API for some shitty image upload site.
